@@ -1,4 +1,6 @@
-import torch.nn as nn 
+"""
+
+import torch.nn as nn
 from torchvision import models
 
 CatfishClasses = ["cat","fish"]
@@ -7,7 +9,9 @@ CatfishModel = models.resnet50()
 CatfishModel.fc = nn.Sequential(nn.Linear(CatfishModel.fc.in_features,500),
                   nn.ReLU(),
                   nn.Dropout(), nn.Linear(500,2))
-(base) ian@ubuntu:~/fixes/docker$ cat catfish_server.py 
+#(base) ian@ubuntu:~/fixes/docker$ cat catfish_server.py
+"""
+"""
 import os
 import requests
 import torch
@@ -61,3 +65,42 @@ def create_app():
     return app
 if __name__ == '__main__':
   app.run(host=os.environ["CATFISH_HOST"], port=os.environ["CATFISH_PORT"])
+"""
+
+import os
+import torch
+from io import BytesIO
+from flask import Flask, jsonify
+from PIL import Image
+from torchvision import transforms
+
+from catfish_model import CatfishModel, CatfishClasses
+
+def load_model():
+    model = CatfishModel
+    return model
+
+model = load_model()
+
+app = Flask(__name__)
+
+@app.route("/")
+def status():
+    return jsonify({"status": "ok"})
+
+@app.route("/predict", methods=['GET', 'POST'])
+def predict():
+    if request.method == 'POST':
+        img_url = request.form.image_url
+    else:
+        img_url = request.args.get('image_url', '')
+
+    response = request.get(img_url) ### requests
+    img = Image.open(BytesIO(response.content))
+    img_tensor = img_transforms(img).unsqueeze(0)
+    prediction =  model(img_tensor)
+    predicted_class = CatfishClasses[torch.argmax(prediction)]
+    return jsonify({"image": img_url, "prediction": predicted_class})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')#host=os.environ["CATFISH_HOST"], port=os.environ["CATFISH_PORT"])
