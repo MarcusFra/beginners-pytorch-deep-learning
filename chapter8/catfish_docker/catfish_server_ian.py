@@ -24,7 +24,7 @@ def load_model():
 """
 def load_model():
     m = CatfishModel
-    location = os.environ["CATFISH_MODEL_LOCATION"]
+    location = "catfishweights.pth" ###os.environ["CATFISH_MODEL_LOCATION"]
     m.load_state_dict(torch.load(location, map_location=torch.device('cpu')))  ###map_location=torch.device('cpu')
     return m
 
@@ -33,12 +33,12 @@ model = load_model()
 img_transforms = transforms.Compose([
     transforms.Resize((64,64)),
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                    std=[0.229, 0.224, 0.225] )
+	transforms.Normalize(mean=[0.485, 0.456, 0.406],
+	                     std=[0.229, 0.224, 0.225] )
 ])
 
 def create_app():
-	app = Flask(__name__)\
+	app = Flask(__name__)
 
 	@app.route("/")
 	def status():

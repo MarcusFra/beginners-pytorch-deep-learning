@@ -11,13 +11,13 @@ RUN mkdir -p /app
 
 COPY ./catfish_model.py /app
 COPY ./catfish_server.py /app
-#COPY ./run_model_service.sh /
+#COPY ./run-model-service.sh /
 
 EXPOSE $port
 
 ENTRYPOINT [ "python" ]
 # Neu
 CMD ["./app/catfish_server.py"]
-# ENTRYPOINT ["/run_model_service.sh"]
+# ENTRYPOINT ["/run-model-service.sh"]
 
 

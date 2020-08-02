@@ -1,0 +1,26 @@
+FROM continuumio/miniconda3:latest
+
+ARG model_parameter_location
+ARG model_parameter_name
+ARG port
+ARG host
+
+ENV CATFISH_PORT=$port
+ENV CATFISH_HOST=$host
+ENV CATFISH_MODEL_LOCATION=$model_parameter_name
+
+RUN conda install -y flask \
+  && conda install -c pytorch torchvision \
+  && conda install -y requests pillow waitress
+# -y requests pillow
+RUN mkdir -p /app
+
+COPY ./catfish_model.py /app
+COPY ./catfish_server_ian.py /app
+COPY ./catfishweights.pth /app
+# $model_parameter_location/$model_parameter_name /app
+COPY ./run-model-service.sh /
+
+EXPOSE $port
+
+ENTRYPOINT ["/run-model-service.sh"]
