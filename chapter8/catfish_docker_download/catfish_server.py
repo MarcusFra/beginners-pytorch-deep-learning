@@ -5,11 +5,23 @@ from flask import Flask, jsonify, request
 from io import BytesIO
 from PIL import Image
 from torchvision import transforms
+from urllib.request import urlopen
+from shutil import copyfileobj
+from tempfile import NamedTemporaryFile
+
 from catfish_model import CatfishModel, CatfishClasses
 
+
 def load_model():
-  m = CatfishModel
-  return m
+    m = CatfishModel
+    if "CATFISH_MODEL_LOCATION" in os.environ:
+        parameter_url = os.environ["CATFISH_MODEL_LOCATION"]
+        print(f"downloading {parameter_url}")
+        with urlopen(parameter_url) as fsrc, NamedTemporaryFile() as fdst:
+            copyfileobj(fsrc, fdst)
+            m.load_state_dict(torch.load(fdst, map_location="cpu")) ### , map_location="cpu"
+            #m.load_state_dict(torch.load(parameter_url)) #location
+    return m
 
 
 model = load_model()
@@ -45,4 +57,4 @@ def create_app():
 
     return app
 if __name__ == '__main__':
-    create_app().run(host=os.environ["CATFISH_HOST"], port=os.environ["CATFISH_PORT"])
+    create_app().run(host=os.environ["CATFISH_HOST"], port=os.environ["CATFISH_PORT"]) # create_app
