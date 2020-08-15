@@ -12,6 +12,16 @@ from shutil import copyfileobj ###
 from tempfile import NamedTemporaryFile ###
 from urllib.request import urlopen ###
 
+train_iterator, valid_iterator, test_iterator = \
+				data.BucketIterator.splits((train, valid, test),
+											batch_size=32,
+											device=device,
+											sort_key = lambda x: len(x.tweet),
+											sort_within_batch = False)
+
+val_data = ImageFolder(root=val_data_path,
+                       transform=img_transforms,
+                       is_valid_file=check_image)
 """
 def load_model():
 	m = CatfishModel
