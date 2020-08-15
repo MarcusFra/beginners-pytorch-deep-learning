@@ -6,21 +6,7 @@ from io import BytesIO
 from PIL import Image
 from torchvision import transforms
 from catfish_model import CatfishModel, CatfishClasses
-from urllib.request import urlopen
-from shutil import copyfileobj
-from tempfile import NamedTemporaryFile
 
-
-def load_model():
-    m = CatfishModel
-    if "CATFISH_MODEL_LOCATION" in os.environ:
-        parameter_url = os.environ["CATFISH_MODEL_LOCATION"]
-        print(f"downloading {parameter_url}")
-        with urlopen(parameter_url) as fsrc, NamedTemporaryFile() as fdst:
-            copyfileobj(fsrc, fdst)
-            m.load_state_dict(torch.load(fdst, map_location="cpu")) ### , map_location="cpu"
-            #m.load_state_dict(torch.load(parameter_url)) #location
-    return m
 
 ###
 location = os.environ["CATFISH_MODEL_LOCATION"]

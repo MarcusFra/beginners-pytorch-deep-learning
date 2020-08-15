@@ -10,7 +10,7 @@ RUN conda install -y flask \
 RUN mkdir -p /app
 
 COPY ./catfish_model.py /app
-COPY ./catfish_server.py /app
+COPY ./catfish_server_base.py /app
 COPY ./run-model-service.sh /
 
 EXPOSE $port
