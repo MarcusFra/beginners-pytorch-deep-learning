@@ -8,8 +8,8 @@ from torchvision import transforms
 from catfish_model import CatfishModel, CatfishClasses
 
 def load_model():
-  m = CatfishModel
-  return m
+    m = CatfishModel
+    return m
 
 
 model = load_model()
@@ -21,28 +21,28 @@ img_transforms = transforms.Compose([
                     std=[0.229, 0.224, 0.225] )
 ])
 
-def create_app():
-    app = Flask(__name__)
+#def create_app():
+app = Flask(__name__)
 
 
-    @app.route("/")
-    def status():
-        return jsonify({"status": "ok"})
+@app.route("/")
+def status():
+    return jsonify({"status": "ok"})
 
-    @app.route("/predict", methods=['GET', 'POST'])
-    def predict():
-        if request.method == 'POST':
-            img_url = request.form.image_url
-        else:
-            img_url = request.args.get('image_url', '')
+@app.route("/predict", methods=['GET', 'POST'])
+def predict():
+    if request.method == 'POST':
+        img_url = request.form.image_url
+    else:
+        img_url = request.args.get('image_url', '')
 
-        response = requests.get(img_url)
-        img = Image.open(BytesIO(response.content))
-        img_tensor = img_transforms(img).unsqueeze(0)
-        prediction =  model(img_tensor)
-        predicted_class = CatfishClasses[torch.argmax(prediction)]
-        return jsonify({"image": img_url, "prediction": predicted_class})
+    response = requests.get(img_url)
+    img = Image.open(BytesIO(response.content))
+    img_tensor = img_transforms(img).unsqueeze(0)
+    prediction =  model(img_tensor)
+    predicted_class = CatfishClasses[torch.argmax(prediction)]
+    return jsonify({"image": img_url, "prediction": predicted_class})
 
-    return app
-if __name__ == '__main__':
-    create_app().run(host=os.environ["CATFISH_HOST"], port=os.environ["CATFISH_PORT"])
+    #return app
+#if __name__ == '__main__':
+#    create_app().run(host=os.environ["CATFISH_HOST"], port=os.environ["CATFISH_PORT"])
